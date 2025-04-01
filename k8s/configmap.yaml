@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: store-front-config
+data:
+  ORDER_API_URL: "http://order-service:3050"
+  PRODUCT_API_URL: "http://product-service:3060" 
