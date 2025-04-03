@@ -12,6 +12,8 @@ spec:
       labels:
         app: store-front
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       containers:
       - name: store-front
         image: zeelu1/store-front-25w:latest
