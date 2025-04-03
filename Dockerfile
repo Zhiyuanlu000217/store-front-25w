@@ -1,8 +1,8 @@
 # Use a specific version of Node.js for better reproducibility
-FROM node:20-alpine AS base
+FROM --platform=linux/amd64 node:20-alpine AS base
 
 # Install dependencies only when needed
-FROM base AS deps
+FROM --platform=linux/amd64 base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -11,19 +11,20 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 # Rebuild the source code only when needed
-FROM base AS builder
+FROM --platform=linux/amd64 base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
+# Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npm run build
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM --platform=linux/amd64 base AS runner
 WORKDIR /app
 
 ENV NODE_ENV production
@@ -40,6 +41,7 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 

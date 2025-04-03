@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: store-front
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: store-front
@@ -12,12 +12,9 @@ spec:
       labels:
         app: store-front
     spec:
-      nodeSelector:
-        kubernetes.io/os: linux
-        kubernetes.io/arch: amd64
       containers:
       - name: store-front
-        image: zeelu1/store-front-25w:latest
+        image: zeelu1/store-front-25w:amd64
         ports:
         - containerPort: 3000
         envFrom:
@@ -42,15 +39,3 @@ spec:
             port: 3000
           initialDelaySeconds: 15
           periodSeconds: 10
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: store-front
-spec:
-  selector:
-    app: store-front
-  ports:
-  - port: 3000
-    targetPort: 3000
-  type: LoadBalancer 
