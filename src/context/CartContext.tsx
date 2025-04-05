@@ -8,12 +8,15 @@ interface CartItem {
   sku: string;
   price: number;
   quantity: number;
+  description: string;
+  imageUrl: string;
 }
 
 interface CartContextType {
   items: CartItem[];
   addItem: (item: CartItem) => void;
   removeItem: (index: number) => void;
+  updateQuantity: (index: number, quantity: number) => void;
   clearCart: () => void;
   totalItems: number;
 }
@@ -41,6 +44,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems(currentItems => currentItems.filter((_, i) => i !== index));
   };
 
+  const updateQuantity = (index: number, quantity: number) => {
+    if (quantity <= 0) return;
+    
+    console.log(`CartContext: Updating quantity for item at index ${index} to ${quantity}`);
+    
+    setItems(currentItems => {
+      const updatedItems = currentItems.map((item, i) => 
+        i === index ? { ...item, quantity } : item
+      );
+      console.log('Updated items:', updatedItems);
+      return updatedItems;
+    });
+  };
+
   const clearCart = () => {
     setItems([]);
   };
@@ -48,7 +65,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, clearCart, totalItems }}>
+    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems }}>
       {children}
     </CartContext.Provider>
   );
